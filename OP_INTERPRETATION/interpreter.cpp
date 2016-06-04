@@ -43,9 +43,6 @@ int main()
 
 
 
-
-
-
 	// FLAGS: CF ( CARRY FLAG )
 	// Registers: A B C X
 	// 01: store next byte in A
