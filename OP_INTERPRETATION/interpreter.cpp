@@ -12,6 +12,8 @@
 #include <vector>
 
 
+void print_bits(const uint8_t);
+
 int main()
 {
 	std::ifstream rom("ROM", std::ios::binary);
@@ -53,12 +55,12 @@ int main()
 	// 20: sub B from A
 	// 40: sub C from A
 	// 80: store A to X
-	// 81: add A to X
-	// 82: clear CF
+	// 98: clear BRW
+	// 99: clear CF
 
-	uint8_t CF = 0;
+	uint8_t CF = 0, BRW = 0;
 	uint8_t A=0, B=0, C=0; // <= 255
-	uint16_t X=0; // > 255
+	int16_t X=0; // > 255
 	
 	bytes.push_back(0x00); // push back a null op for offset secutiry;
 	for(size_t i = 0; i < bytes.size(); ++i)
@@ -71,24 +73,62 @@ int main()
 			case 0x08:
 			{
 				uint16_t res = A + B;
-				CF = ( 0xff00 & res ) == 0 ? 0 : 1;
+				CF = ( 0xff00 & res ) ? 0x80 : 0;
 				A = res & 0xff;
 				continue;
 			}
 
 			case 0x10: A += C; continue;
-			case 0x20: A -= B; continue;
+			case 0x20:
+				BRW = ( B > A ) ? 0x80 : 0;	 
+				A = (-A) + B; 
+				continue;
+
 			case 0x40: A -= C; continue;
-			case 0x80: X = CF << 8 | A; continue;
-			case 0x81: X += CF << 8 | A; continue;
-			case 0x82: CF = 0; continue;
+			case 0x80: X = (CF << 1) | A; continue;
+			case 0x99: CF = 0; continue;
 			default: continue;
 		}
 	}
 
 	puts("\n\tRESULTS:");
-	printf("A = %3u | B = %3u | C = %3u | X = %5d\n", A, B, C, X);
+	printf("A = %3u | B = %3u | C = %3u | X = %i\n", A, B, C, (BRW) ? -X : X);
+
+	printf("A = "); print_bits(A);
+	printf("\nB = "); print_bits(B); 
+	printf("\nC = "); print_bits(C);
+	
+	// 16 bits X 
+	printf("\nX = "); 
+	print_bits( (X & 0xff00) >> 8 );
+	putchar(' ');
+	print_bits(X & 0xff);
+	putchar('\n');
 
 
 	return EXIT_SUCCESS;
+}
+
+
+
+
+
+
+
+
+
+
+
+void print_bits(const uint8_t byte)
+{
+	size_t j;
+
+	for(j = 8; j > 4; --j)
+		printf("%c", ((byte >> (j-1)) & 0x01) ? '1' : '0');
+	
+	putchar(' ');
+		
+	for(; j > 0; --j)
+		printf("%c", ((byte >> (j-1)) & 0x01) ? '1' : '0');
+
 }
