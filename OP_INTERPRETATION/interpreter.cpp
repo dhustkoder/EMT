@@ -1,5 +1,5 @@
 // Copyright (C) 2016 Rafael Moura
-// Demonstration of an 8 bit opcode interpreter and carry flag
+// Demonstration of an 8 bit opcode interpreter and carry, borrow, sign flag
 // for 16 bit math
 
 // done for -std=c++98
@@ -8,6 +8,7 @@
 #include <stdlib.h> // EXIT_... macros
 #include <stddef.h> // size_t
 #include <stdint.h> // _t types
+#include <inttypes.h> // SCNd16
 #include <fstream>
 #include <vector>
 
@@ -45,7 +46,7 @@ int main()
 
 
 
-	// FLAGS: CF ( CARRY FLAG )
+	// FLAGS: CF ( CARRY FLAG and borrow )  SF ( SIGN FLAG )
 	// Registers: A B C X
 	// 01: store next byte in A
 	// 02: store next byte in B
@@ -58,9 +59,11 @@ int main()
 	// 98: clear BRW
 	// 99: clear CF
 
-	uint8_t CF = 0, BRW = 0;
+
+
+	uint8_t CF = 0, SF = 0;
 	uint8_t A=0, B=0, C=0; // <= 255
-	int16_t X=0; // > 255
+	uint16_t X=0; // > 255
 	
 	bytes.push_back(0x00); // push back a null op for offset secutiry;
 	for(size_t i = 0; i < bytes.size(); ++i)
@@ -79,20 +82,33 @@ int main()
 			}
 
 			case 0x10: A += C; continue;
+
 			case 0x20:
-				BRW = ( B > A ) ? 0x80 : 0;	 
-				A = (-A) + B; 
+				SF = ( A < B ) ? 0xfe : 0;
+				CF = ( A - B ) < -255 ? 0 : 0x80;
+				A -= B;
 				continue;
 
-			case 0x40: A -= C; continue;
-			case 0x80: X = (CF << 1) | A; continue;
-			case 0x99: CF = 0; continue;
+
+			case 0x40: 
+				A -= C;
+				continue;
+
+
+			case 0x80:
+				if(SF) X = 0xfe00 | ( (CF<<1) | A );
+				else X = (CF << 1) | A;
+				continue;
+
+
+			case 0x82: SF=0; continue; 
+			case 0x84: CF=0; continue;
 			default: continue;
 		}
 	}
 
 	puts("\n\tRESULTS:");
-	printf("A = %3u | B = %3u | C = %3u | X = %i\n", A, B, C, (BRW) ? -X : X);
+	printf("A = %3u | B = %3u | C = %3u | X = %" SCNd16 "\n" , A, B, C, X);
 
 	printf("A = "); print_bits(A);
 	printf("\nB = "); print_bits(B); 
