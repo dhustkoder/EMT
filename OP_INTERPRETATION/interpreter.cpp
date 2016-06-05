@@ -58,7 +58,6 @@ int main()
 	// 80: store A to X
 	// 82: clear SF
 	// 84: clear CF
-	// 88: print results
 	// 90: zero registers
 
 
