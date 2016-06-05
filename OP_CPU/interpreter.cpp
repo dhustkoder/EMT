@@ -1,5 +1,5 @@
 // Copyright (C) 2016 Rafael Moura
-// Demonstration of an 8 bit opcode interpreter and carry
+// Demonstration of a 8 bit opcode interpreter and carry
 // for 16 bit math
 
 // done for -std=c++98
