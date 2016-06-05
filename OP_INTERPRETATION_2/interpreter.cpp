@@ -12,8 +12,9 @@
 #include <fstream>
 #include <vector>
 
+template<class T>
+void print_bits(const T);
 
-void print_bits(const uint8_t);
 
 int main()
 {
@@ -123,20 +124,14 @@ int main()
 	}
 
 	puts("\n\tRESULTS:");
-	printf("A = %3u | B = %3u | C = %3u | X = %" SCNd16 "\n" , A, B, C, X);
+	printf("A = %3u | B = %3u | C = %3u | X = %" SCNd16 "", A, B, C, X);
 
-	printf("A = "); print_bits(A);
+	printf("\nA = "); print_bits(A);
 	printf("\nB = "); print_bits(B); 
 	printf("\nC = "); print_bits(C);
-	
-	// 16 bits X 
-	printf("\nX = "); 
-	print_bits( (X & 0xff00) >> 8 );
-	putchar(' ');
-	print_bits(X & 0xff);
+	printf("\nX = "); print_bits(X);
 	putchar('\n');
-
-
+	
 	return EXIT_SUCCESS;
 }
 
@@ -148,22 +143,31 @@ int main()
 
 
 
-
-
-
-
-
-
-void print_bits(const uint8_t byte)
+template<class T>
+void print_bits(const T val)
 {
-	size_t j;
+	size_t j = 0;
+	const T mask =  0x01 << (( sizeof(T)*8 ) - 1);
+	// create a mask with the T's MSB set.
+	// if T == uint8_t, mask = 0x80, if T == uint16_t, mask = 0x8000
 
-	for(j = 8; j > 4; --j)
-		printf("%u", (byte >> (j-1))&0x01);
+	// prints 4 bits and a space, then prints other 4 bits
+	size_t bit;
+
+	do
+	{
+
+		for(bit = 0; bit < 4; ++j, ++bit)
+			printf("%c", (val << j)&mask ? '1' : '0');
 	
-	putchar(' ');
+		putchar(' ');
 		
-	for(; j > 0; --j)
-		printf("%u", (byte >> (j-1))&0x01);
+		for(; bit < 8; ++j, ++bit)
+			printf("%c", (val << j)&mask ? '1' : '0');
+
+		putchar(' ');
+	
+	} while( j < (sizeof(T)*8) );
+
 
 }
