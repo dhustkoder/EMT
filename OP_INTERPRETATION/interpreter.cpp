@@ -56,8 +56,10 @@ int main()
 	// 20: sub B from A
 	// 40: sub C from A
 	// 80: store A to X
-	// 98: clear BRW
-	// 99: clear CF
+	// 82: clear SF
+	// 84: clear CF
+	// 88: print results
+	// 90: zero registers
 
 
 
@@ -70,10 +72,13 @@ int main()
 	{
 		switch(bytes[i])
 		{
+			case 0x00: continue;
 			case 0x01: A = bytes[++i]; continue;
 			case 0x02: B = bytes[++i]; continue;
 			case 0x04: C = bytes[++i]; continue;
-			case 0x08:
+
+
+			case 0x08: // add B to A with carry
 			{
 				uint16_t res = A + B;
 				CF = ( 0xff00 & res ) ? 0x80 : 0;
@@ -81,29 +86,34 @@ int main()
 				continue;
 			}
 
-			case 0x10: A += C; continue;
-
-			case 0x20:
-				SF = ( A < B ) ? 0xfe : 0;
-				CF = ( A - B ) < -255 ? 0 : 0x80;
-				A -= B;
+			case 0x10: 
+				A += C; 
 				continue;
 
+			case 0x20: // sub B from A with carry
+				SF = ( A < B ) ? 1 : 0;
+				CF = ( A < B ) ? 0x0 : 0x80;
+				A -= B;
+				continue;
 
 			case 0x40: 
 				A -= C;
 				continue;
 
-
 			case 0x80:
-				if(SF) X = 0xfe00 | ( (CF<<1) | A );
+				if(SF) X = 0xff00  | A ;
 				else X = (CF << 1) | A;
 				continue;
 
-
 			case 0x82: SF=0; continue; 
 			case 0x84: CF=0; continue;
-			default: continue;
+
+
+			case 0x90: A=0, B=0, C=0, X=0;
+
+			default: 
+				printf("unknown opcode $%X\n", bytes[i]);
+				continue;
 		}
 	}
 
