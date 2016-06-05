@@ -112,18 +112,18 @@ void print_bytes(const uint8_t* bytes, const size_t size)
 
 
 
-
-void print_bits(uint8_t byte)
+void print_bits(const uint8_t byte)
 {
 	size_t j;
 
 	for(j = 8; j > 4; --j)
-		printf("%c", ((byte >> (j-1)) & 0x01) ? '1' : '0');
+		printf("%u", (byte >> (j-1))&0x01);
 	
 	putchar(' ');
 		
 	for(; j > 0; --j)
-		printf("%c", ((byte >> (j-1)) & 0x01) ? '1' : '0');
-
+		printf("%u", (byte >> (j-1))&0x01);
 
 }
+
+
