@@ -13,12 +13,13 @@
 
 static struct CPU
 {
-	enum { ZF = 0x00, CF = 0x80, SF = 0x40 };
+	// FLAGS
+	enum { ZF = 0x00, CF = 0x80, SF = 0x40 }; 
 	uint16_t opcode;
-	uint16_t X;
-	uint8_t A, B, C;
+	uint16_t X; // 16 bits register
+	uint8_t A, B, C; // 8 bits registers
+	uint8_t F; // flags
 	uint8_t mem[32];
-	uint8_t flags;
 
 } cpu;
 
@@ -28,7 +29,7 @@ void print_cpu();
 
 int main()
 {
-	// flags = CS00 000Z
+	// F = CS00 000Z
 	// Registers: A B C X
 	// 0xA000: move B to A
 	// 0xA001: move C to A
@@ -65,13 +66,13 @@ int main()
 void execute_opcode()
 {
 #define OPMSB (cpu.opcode&0xff00)
-#define OPLSB (cpu.opcoe&0x00ff)
+#define OPLSB (cpu.opcode&0x00ff)
 
 #define ZF (CPU::ZF)
 #define CF (CPU::CF)
 #define SF (CPU::SF)
-#define SETF(FLAG) cpu.flags |= FLAG
-#define UNSETF(FLAG) cpu.flags ^= FLAG
+#define SETF(FLAG) cpu.F |= FLAG
+#define UNSETF(FLAG) cpu.F ^= FLAG
 
 #define A (cpu.A)
 #define B (cpu.B)
@@ -87,7 +88,7 @@ void execute_opcode()
 		cout << "UNKNOWN OPCODE: " << cpu.opcode << endl;
 		cout.unsetf(ios::showbase);
 		cout.setf(oldf);
-	}
+	};
 
 	switch( OPMSB  )
 	{
@@ -116,7 +117,7 @@ void execute_opcode()
 				case 0x04:
 				{
 					if( A > B )
-						SETF(CF)
+						SETF(CF);
 					else 
 					{
 						UNSETF(CF);
@@ -146,19 +147,18 @@ void execute_opcode()
 
 	}
 
-#undef OPMSB (cpu.opcode&0xff00)
-#undef OPLSB (cpu.opcoe&0x00ff)
+#undef OPMSB 
+#undef OPLSB 
+#undef A 
+#undef B
+#undef C
+#undef X
 
-#undef A (cpu.A)
-#undef B (cpu.B)
-#undef C (cpu.C)
-#undef X (cpu.X)
-
-#undef ZF (CPU::ZF)
-#undef CF (CPU::CF)
-#undef SF (CPU::SF)
-#undef SETF(FLAG) cpu.flags |= FLAG
-#undef UNSETF(FLAG) cpu.flags ^= FLAG
+#undef ZF
+#undef CF
+#undef SF
+#undef SETF
+#undef UNSETF
 
 
 
