@@ -12,17 +12,27 @@
 #include <fstream>
 #include <vector>
 
+
+
+
 template<class T>
 void print_bits(const T);
 
 
-int main()
+int main(int argc, char** argv)
 {
-	std::ifstream rom("ROM", std::ios::binary);
+
+	if(argc < 2)
+	{
+		printf("Usage: %s <filename>\n", argv[0]);
+		return EXIT_SUCCESS;
+	}
+
+	std::ifstream rom(argv[1], std::ios::binary);
 
 	if(!rom.good())
 	{
-		puts("failed to open \'ROM\'");
+		perror("failed to open \'ROM\'");
 		return EXIT_FAILURE;
 	}
 
@@ -30,7 +40,7 @@ int main()
 	const size_t rom_size = static_cast<size_t>(rom.tellg());
 	rom.seekg(0, rom.beg);
 
-	printf("ROM size: %lu\n", rom_size);
+	printf("%s size: %lu\n", argv[1], rom_size);
 	puts("start reading bytes");
 
 	std::vector<uint8_t> bytes;
@@ -140,34 +150,26 @@ int main()
 
 
 
-
-
-
 template<class T>
 void print_bits(const T val)
 {
+
+	static const size_t t_lengh = sizeof(T) * 8;
+	// bits lengh of T. if T==uint8_t , t_leng = 8
+	// if T==uint16_t , t_leng = 16 ...
+
+	static const T mask =  0x01 << (t_lengh - 1);
+	// create a mask with the T's MSB set. if T == uint8_t, mask = 0x80, 
+	// else if T == uint16_t, mask = 0x8000 ...
+
+	// prints 4 bits and a space
 	size_t j = 0;
-	const T mask =  0x01 << (( sizeof(T)*8 ) - 1);
-	// create a mask with the T's MSB set.
-	// if T == uint8_t, mask = 0x80, if T == uint16_t, mask = 0x8000
-
-	// prints 4 bits and a space, then prints other 4 bits
-	size_t bit;
-
-	do
+	do 
 	{
-
-		for(bit = 0; bit < 4; ++j, ++bit)
+		for(int bit = 0; bit < 4; ++j, ++bit)
 			printf("%c", (val << j)&mask ? '1' : '0');
 	
 		putchar(' ');
-		
-		for(; bit < 8; ++j, ++bit)
-			printf("%c", (val << j)&mask ? '1' : '0');
-
-		putchar(' ');
-	
-	} while( j < (sizeof(T)*8) );
-
+	} while( j < t_lengh );
 
 }
