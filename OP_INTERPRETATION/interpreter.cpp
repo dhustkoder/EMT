@@ -105,11 +105,17 @@ int main()
 				else X = (CF << 1) | A;
 				continue;
 
-			case 0x82: SF=0; continue; 
-			case 0x84: CF=0; continue;
+			case 0x82: 
+				SF=0; 
+				continue; 
 
+			case 0x84: 
+				CF=0; 
+				continue;
 
-			case 0x90: A=0, B=0, C=0, X=0;
+			case 0x90: 
+				A=0, B=0, C=0, X=0, SF=0, CF=0;
+				continue;
 
 			default: 
 				printf("unknown opcode $%X\n", bytes[i]);
@@ -134,6 +140,10 @@ int main()
 
 	return EXIT_SUCCESS;
 }
+
+
+
+
 
 
 
