@@ -20,7 +20,7 @@
 
 
 void print_bytes(const uint8_t* bytes, const size_t size);
-void print_bits(uint8_t byte);
+void print_bits(const uint8_t byte);
 
 
 int main()
