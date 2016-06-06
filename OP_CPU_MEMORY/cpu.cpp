@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 	}
 
 	errno = 0;
-	std::ifstream rom(argv[1], std::ios::binary | std::ios::ate);
+	std::ifstream rom(argv[1], std::ios::binary);
 
 
 	if( !rom.good() )
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 	
-	
+	rom.seekg(0, rom.end);
 	const auto rom_size = rom.tellg();
 	rom.seekg(0, rom.beg);
 
@@ -162,15 +162,12 @@ void execute_opcode()
 
 				case 0x04:
 				{
-					if( !GETF(CF) ) --B;
+					if( GETF(CF) ) --B;
 
 					if( A > B )
-						SETF(CF);
-					else 
-					{
 						UNSETF(CF);
-						SETF(SF);
-					}
+					else 
+						SETF(CF | SF);
 
 					A -= B;
 					break;

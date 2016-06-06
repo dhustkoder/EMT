@@ -1,0 +1,28 @@
+Copyright (C) 2016 Rafael Moura
+
+LOADA 0x01
+LOADB 0x02
+LOADC 3
+
+LOADMA 0x00
+LOADMB 0x01
+LOADMC 0x03
+LODMD  0x04
+
+
+STOREA 00
+STOREB 01
+STOREC 03
+
+
+
+
+
+
+
+
+
+
+
+
+
