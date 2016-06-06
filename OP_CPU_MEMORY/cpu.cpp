@@ -3,7 +3,7 @@
 
 // done for -std=c++11
 
-
+#include <cstdio>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -27,7 +27,7 @@ static struct CPU
 void execute_opcode();
 void print_cpu();
 
-int main()
+int main(int argc, char** argv)
 {
 	// F = CS00 000Z
 	// Registers: A B C X
@@ -49,8 +49,50 @@ int main()
 	// 0xC4NN: store C into mem at NN
 
 
+	if( argc < 2 )
+	{
+		std::cerr << "USAGE: " << argv[0] << " <filename> " << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	errno = 0;
+	std::ifstream rom(argv[1], std::ios::binary | std::ios::ate);
+
+
+	if( !rom.good() )
+	{
+		std::cerr << "FAILED TO OPEN FILE \'" << argv[1] << "\'";
+		if(errno)
+			std::perror(":");
+
+		std::cerr << std::endl;
+		return EXIT_FAILURE;
+	}
+	
+	
+	const auto rom_size = rom.tellg();
+	rom.seekg(0, rom.beg);
+
+	if( rom_size <= 0 )
+	{
+		std::cerr << "FILE \'" << argv[1] << "\' IS EMPTY!" << std::endl;
+		return EXIT_FAILURE;
+	}
+
+
+	std::cout << "ROM SIZE: " << rom_size << std::endl;
+	std::cout << "READING ROM NOW!" << std::endl;
+
+	while(rom.good())
+	{
+		const auto msb = rom.get();
+		const auto lsb = rom.get();
+		cpu.opcode = msb << 8 | lsb;
+		execute_opcode();
+	}
 
 	print_cpu();
+
 	return EXIT_SUCCESS;
 }
 
@@ -65,6 +107,7 @@ int main()
 
 void execute_opcode()
 {
+
 #define OPMSB (cpu.opcode&0xff00)
 #define OPLSB (cpu.opcode&0x00ff)
 
@@ -73,7 +116,7 @@ void execute_opcode()
 #define SF (CPU::SF)
 #define SETF(FLAG) cpu.F |= FLAG
 #define UNSETF(FLAG) cpu.F ^= FLAG
-
+#define GETF(FLAG) (cpu.F & FLAG)
 #define A (cpu.A)
 #define B (cpu.B)
 #define C (cpu.C)
@@ -92,6 +135,7 @@ void execute_opcode()
 
 	switch( OPMSB  )
 	{
+		case 0x0000: break;
 		case 0xA000:
 		{
 			switch( OPLSB )
@@ -102,6 +146,8 @@ void execute_opcode()
 				case 0x02:
 				{
 					uint16_t res = A + B;
+					if(GETF(CF)) ++res;
+
 					if(res > 0xff)
 						SETF(CF);
 					else
@@ -116,6 +162,8 @@ void execute_opcode()
 
 				case 0x04:
 				{
+					if( !GETF(CF) ) --B;
+
 					if( A > B )
 						SETF(CF);
 					else 
@@ -134,17 +182,21 @@ void execute_opcode()
 				default: unknown_opcode(); break;
 
 			}
+
+			break;
 		}
 
-		case 0xA100: break;
-		case 0xB100: break;
-		case 0xC100: break;  
-		case 0xA200: break; 
-		case 0xB200: break; 
-		case 0xC200: break; 
-		case 0xD200: break; 
-
-
+		case 0xA100: A = OPLSB; break;
+		case 0xB100: B = OPLSB; break;
+		case 0xC100: C = OPLSB; break;  
+		case 0xA200: A = cpu.mem[OPLSB]; break; 
+		case 0xB200: B = cpu.mem[OPLSB]; break; 
+		case 0xC200: C = cpu.mem[OPLSB]; break; 
+		case 0xD200: X = cpu.mem[OPLSB] << 8 | cpu.mem[OPLSB+1]; break;
+		case 0xA400: cpu.mem[OPLSB] = A; break;
+		case 0xB400: cpu.mem[OPLSB] = B; break;
+		case 0xC400: cpu.mem[OPLSB] = C; break;
+		default: unknown_opcode(); break;
 	}
 
 #undef OPMSB 
@@ -159,7 +211,7 @@ void execute_opcode()
 #undef SF
 #undef SETF
 #undef UNSETF
-
+#undef GETF
 
 
 }
@@ -197,10 +249,14 @@ void print_cpu()
 	const auto oldf = cout.setf(ios::hex, ios::basefield);
 	cout.setf(ios::showbase);
 	
-	cout << "CPU REGISTERS:" << endl;
-	cout << "A = " << cpu.A << " | B = " << cpu.B << " | C = " << cpu.C << endl;
-	cout << "CPU MEMORY:" << endl;
+	cout << "CPU REGISTERS:" << endl
+	     << "A = " << cpu.A 
+             << " | B = " << cpu.B 
+             << " | C = " << cpu.C 
+             << " | X = " << cpu.X << endl;
 
+
+	cout << "CPU MEMORY:" << endl;
 	for(size_t i = 0; i < 32; ++i)
 	{
 		bits = cpu.mem[i];
