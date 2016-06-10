@@ -24,12 +24,25 @@ def SplitOperands(operands):
 def load(operands): 
 	print("LOAD DECODER")
 
-	firstOperand, secondOperand = SplitOperands(operands)
+	first, second = SplitOperands(operands)
 
 	print("WITH OPERANDS: " + str(operands[:len(operands)-1]))
-	print("FIRST: " + str(firstOperand))
-	print("SECOND: " + str(secondOperand))
-
+	print("FIRST: " + str(first))
+	print("SECOND: " + str(second))
+	if second[0] == '#':
+		x = first[0]
+		
+		if x == 'A': return	
+			
+		elif x == 'B': return
+			
+		elif x == 'C':	return
+			
+		elif x == 'D':	return 
+			
+		else:
+			raise Exception("INVALID REGISTER")
+		
 	
 
 def add(operands):
@@ -65,17 +78,19 @@ def CheckKeyWord(string):
 
 	try:
 		key_words.index(string)
+	
 	except:
-		print("KEYWORD NOT FOUND: " + str(string) )
-		return None
-	else:
-		print("KEYWORD FOUND: " + str(string) )
-		return string
+		pass
+		raise Exception("INVALID KEYWORD \'" + str(string) + "\'")
+	
+
+	print("KEYWORD FOUND: " + str(string) )
+	return string
 
 
 
-def IsIdentifierCharacer(char):
-	return char != ' ' and char != '\n' and char != ';' and char != '\t'
+def IsIdentifierCharacter(char):
+	return char != ';' and char != '\n' and char != ' ' and char != '\t'
 
 
 def Parse(codeLines):
@@ -83,16 +98,18 @@ def Parse(codeLines):
 	for line in codeLines:
 		line = line.upper()
 		for i in range(0, len(line)):
-			if line[i] == ';': break;
-			elif IsIdentifierCharacer(line[i]):
-				keyword = CheckKeyWord(line[i:])
-
-				if keyword != None:
+			if IsIdentifierCharacter(line[i]):
+				try:
+					keyword = CheckKeyWord(line[i:])
 					operands = line[len(keyword):]
 					Decode(keyword, operands)
-					break
-				else:
-					raise Exception("INVALID KEYWORD: " + str() + "\nLINE: " + str(codeLines.index(line)+1))
+				except Exception as err:
+					pass
+					errStr = str(err)
+					raise Exception("ERROR IN  LINE " + str(codeLines.index(line)+1) + ": " + errStr)
+				break
+				
+
 
 
 
