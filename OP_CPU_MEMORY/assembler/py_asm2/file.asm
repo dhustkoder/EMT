@@ -1,0 +1,5 @@
+LOAD A, 10
+STORE A, 10
+SHIT
+
+; JMP
