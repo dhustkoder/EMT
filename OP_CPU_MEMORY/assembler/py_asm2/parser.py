@@ -26,23 +26,31 @@ def load(operands):
 
 	first, second = SplitOperands(operands)
 
+	try:
+		registers.index(str(first))
+	except:
+		raise Exception("INVALID REGISTER \'" + str(first) + "\'")
+
+	register = first
+
 	print("WITH OPERANDS: " + str(operands[:len(operands)-1]))
 	print("FIRST: " + str(first))
 	print("SECOND: " + str(second))
+	
+	
 	if second[0] == '#':
-		x = first[0]
-		
-		if x == 'A': return	
+		# is immediate
+		if register == 'A': pass
 			
-		elif x == 'B': return
+		elif register == 'B': pass
 			
-		elif x == 'C':	return
+		elif register == 'C':	pass
 			
-		elif x == 'D':	return 
-			
-		else:
-			raise Exception("INVALID REGISTER")
-		
+		elif register == 'D':	pass
+
+	else:
+		# is addr
+		pass
 	
 
 def add(operands):
@@ -80,7 +88,6 @@ def CheckKeyWord(string):
 		key_words.index(string)
 	
 	except:
-		pass
 		raise Exception("INVALID KEYWORD \'" + str(string) + "\'")
 	
 
@@ -104,7 +111,6 @@ def Parse(codeLines):
 					operands = line[len(keyword):]
 					Decode(keyword, operands)
 				except Exception as err:
-					pass
 					errStr = str(err)
 					raise Exception("ERROR IN  LINE " + str(codeLines.index(line)+1) + ": " + errStr)
 				break
