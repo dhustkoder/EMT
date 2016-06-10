@@ -29,7 +29,12 @@ def main():
 
 	except Exception as err:
 		PrintError(err)
+		exit(-1)
+	
 
+
+	
+	# ....
 	exit(0)
 
 
