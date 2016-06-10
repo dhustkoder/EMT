@@ -24,14 +24,18 @@ def main():
 	try:
 		ifile = open(sys.argv[1], "r")
 		ifileLines = ifile.readlines()
-		ifile.close()
 		Parse(ifileLines)
+
+		ofile = open("OUTPUT.BIN", "wb")
+		ofile.write(bytes(code_gen))
 
 	except Exception as err:
 		PrintError(err)
 		exit(-1)
 	
-
+	finally:
+		ifile.close()
+		ofile.close()
 
 	
 	# ....
