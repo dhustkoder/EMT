@@ -1,3 +1,9 @@
+'''
+	Copyright (C) 2016 Rafael Moura
+	Demonstration of a simple 8 bit opcode interpreter , with memory managment , and math
+'''
+
+
 import sys
 import io
 
@@ -24,20 +30,19 @@ def main():
 	try:
 		ifile = open(sys.argv[1], "r")
 		ifileLines = ifile.readlines()
+		ifile.close()
+
 		Parse(ifileLines)
 
 		ofile = open("OUTPUT.BIN", "wb")
 		ofile.write(bytes(code_gen))
+		ofile.close()
 
 	except Exception as err:
 		PrintError(err)
 		exit(-1)
 	
-	finally:
-		ifile.close()
-		ofile.close()
 
-	
 	# ....
 	exit(0)
 

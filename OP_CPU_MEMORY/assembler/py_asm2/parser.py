@@ -1,4 +1,8 @@
-import sys
+'''
+	Copyright (C) 2016 Rafael Moura
+	Demonstration of a simple 8 bit opcode interpreter , with memory managment , and math
+'''
+
 import io
 
 
@@ -49,6 +53,9 @@ def move(operands):
 
 	first, second = SplitOperands(operands)
 
+	print("WITH OPERANDS: %s, %s" % (str(first), str(second)))
+
+
 	if first != 'A': raise Exception("ONLY REGISTER A CAN BE MOVED TO")
 
 	msb = 0xA0
@@ -57,7 +64,7 @@ def move(operands):
 	elif second == 'C': lsb = 0x02
 	else: raise Exception("UNKNOWN REGISTER \'" + str(second) + "\'")
 
-	print("ADD GENERATED: %X" % (msb << 8 | lsb))
+	print("MOVE GENERATED: %X" % (msb << 8 | lsb))
 
 	code_gen.append(msb)
 	code_gen.append(lsb)
@@ -81,9 +88,7 @@ def load(operands):
 
 	register = first
 
-	print("WITH OPERANDS: " + str(operands[:len(operands)-1]))
-	print("FIRST: " + str(first))
-	print("SECOND: " + str(second))
+	print("WITH OPERANDS: %s, %s" % (str(first), str(second)))
 	
 	
 	if second[0] == '#':
@@ -137,6 +142,11 @@ def add(operands):
 def sub(operands):
 	print("SUB DECODER")
 
+	first, second = SliptOperands(operands)
+
+	print("WITH OPERANDS: %s, %s" % (str(first), str(second)))
+
+
 	if first != 'A': raise Exception("ONLY REGISTER A CAN BE SUB FROM")
 
 
@@ -163,6 +173,8 @@ def store(operands):
 
 	first, second = SplitOperands(operands)
 
+	print("WITH OPERANDS: %s, %s" % (str(first), str(second)))
+
 
 	try:
 		registers.index(str(first))
@@ -172,10 +184,7 @@ def store(operands):
 
 	register = first
 
-	print("WITH OPERANDS: %s" % str(operands[:len(operands)-1]))
-	print("FIRST: %s" % str(first))
-	print("SECOND: %s" % str(second))
-	
+
 	
 	if second[0] == '#':
 		raise Exception("CANT STORE IN A IMMEDIATE VALUE \'" + str(second) + "\'")
@@ -196,20 +205,16 @@ def store(operands):
 
 
 
+
+
+
+
+
 key_words_decoders = [ move, load, add, sub, store ]
-
-
-
-
-
 
 
 def Decode(keyword, operands):
 	key_words_decoders[key_words.index(keyword)](operands)
-
-
-
-
 
 
 
@@ -238,16 +243,8 @@ def CheckKeyWord(string):
 
 
 
-
-
 def IsIdentifierCharacter(char):
 	return char != ';' and char != '\n' and char != ' ' and char != '\t'
-
-
-
-
-
-
 
 
 
