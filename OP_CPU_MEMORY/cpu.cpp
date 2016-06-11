@@ -51,7 +51,7 @@ int main(int argc, char** argv)
 
 	if( argc < 2 )
 	{
-		std::cerr << "USAGE: " << argv[0] << " <filename> " << std::endl;
+		std::cerr << "USAGE: " << argv[0] << " <filename> \n";
 		return EXIT_FAILURE;
 	}
 
@@ -61,11 +61,13 @@ int main(int argc, char** argv)
 
 	if( !rom.good() )
 	{
-		std::cerr << "FAILED TO OPEN FILE \'" << argv[1] << "\'";
+		std::cerr << "FAILED TO OPEN FILE \'" << argv[1] << '\'';
+
 		if(errno)
 			std::perror(":");
 
 		std::cerr << std::endl;
+
 		return EXIT_FAILURE;
 	}
 	
@@ -75,13 +77,13 @@ int main(int argc, char** argv)
 
 	if( rom_size <= 0 )
 	{
-		std::cerr << "FILE \'" << argv[1] << "\' IS EMPTY!" << std::endl;
+		std::cerr << "FILE \'" << argv[1] << "\' IS EMPTY!\n";
 		return EXIT_FAILURE;
 	}
 
 
-	std::cout << "ROM SIZE: " << rom_size << std::endl;
-	std::cout << "READING ROM NOW!" << std::endl;
+	std::cout << "ROM SIZE: " << rom_size << '\n';
+	std::cout << "READING ROM NOW!\n";
 
 	while(rom.good())
 	{
@@ -128,7 +130,7 @@ void execute_opcode()
 		using namespace std;
 		const auto oldf = cout.setf(ios::hex, ios::basefield);
 		cout.setf(ios::showbase);
-		cout << "UNKNOWN OPCODE: " << cpu.opcode << endl;
+		cout << "UNKNOWN OPCODE: " << cpu.opcode << '\n';
 		cout.unsetf(ios::showbase);
 		cout.setf(oldf);
 	};
@@ -250,20 +252,21 @@ void print_cpu()
 	     << "A = " << cpu.A 
              << " | B = " << cpu.B 
              << " | C = " << cpu.C 
-             << " | X = " << cpu.X << endl;
+             << " | X = " << cpu.X << '\n';
 
 
-	cout << "CPU MEMORY:" << endl;
+	cout << "CPU MEMORY:\n";
+	
 	for(size_t i = 0; i < 32; ++i)
 	{
 		bits = cpu.mem[i];
 		cout << setw(4) << left 
-                     << i << ":" 
+                     << i << ':' 
                      << setw(5) << right
                      << cpu.mem[i]
                      << setw(3) << right
                      << " | " << bits
-                     << endl;
+                     << '\n';
 	}
 
 	cout.setf(oldf, ios::basefield);
