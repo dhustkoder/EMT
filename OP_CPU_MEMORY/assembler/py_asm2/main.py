@@ -24,7 +24,7 @@ def main():
 
 	if len(sys.argv) < 2:
 		PrintError("USAGE: " + str(sys.argv[0]) + " <filename>")
-		exit(-1)
+		sys.exit(-1)
 
 
 	try:
@@ -40,11 +40,11 @@ def main():
 
 	except Exception as err:
 		PrintError(err)
-		exit(-1)
+		sys.exit(-1)
 	
 
 	# ....
-	exit(0)
+	sys.exit(0)
 
 
 
