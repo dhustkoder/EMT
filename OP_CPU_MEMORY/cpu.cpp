@@ -150,9 +150,11 @@ void execute_opcode()
 				case 0x01: A = C; break;
 				
 				case 0x02:
-				{
+				{	
 					uint16_t res = A + B;
-					if(GETF(CF)) ++res;
+					
+					if(GETF(CF)) 
+						++res;
 
 					if(res > 0xff)
 						SETF(CF);
@@ -168,7 +170,9 @@ void execute_opcode()
 
 				case 0x04:
 				{
-					if( GETF(CF) ) --B;
+
+					if( GETF(CF) ) 
+						--B;
 
 					if( A > B )
 						UNSETF(CF);
@@ -276,4 +280,14 @@ void print_cpu()
 	cout.setf(oldf, ios::basefield);
 	cout.unsetf(ios::showbase);
 }
+
+
+
+
+
+
+
+
+
+
 
