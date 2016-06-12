@@ -120,9 +120,9 @@ void execute_opcode()
 #define ZF (CPU::ZF)
 #define CF (CPU::CF)
 #define SF (CPU::SF)
-#define SETF(FLAG) cpu.F |= FLAG
-#define UNSETF(FLAG) cpu.F ^= FLAG
-#define GETF(FLAG) (cpu.F & FLAG)
+#define SETF(FLAG) cpu.F |= (FLAG)
+#define UNSETF(FLAG) cpu.F ^= (FLAG)
+#define GETF(FLAG) (cpu.F & (FLAG))
 #define A (cpu.A)
 #define B (cpu.B)
 #define C (cpu.C)
