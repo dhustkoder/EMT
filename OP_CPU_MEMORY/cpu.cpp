@@ -4,11 +4,15 @@
 // done for -std=c++11
 
 #include <cstdio>
+#include <cstdint>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <bitset>
 
+
+using std::uint16_t;
+using std::uint8_t;
 
 
 static struct CPU
@@ -16,7 +20,7 @@ static struct CPU
 	// FLAGS
 	enum { ZF = 0x00, CF = 0x80, SF = 0x40 }; 
 	uint16_t opcode;
-	uint16_t X; // 16 bits register
+	uint16_t D; // 16 bits register
 	uint8_t A, B, C; // 8 bits registers
 	uint8_t F; // flags
 	uint8_t mem[32];
@@ -43,7 +47,7 @@ int main(int argc, char** argv)
 	// 0xA2NN: load mem at NN into A
 	// 0xB2NN: load mem at NN into B
 	// 0xC2NN: load mem at NN into C
-	// 0xD2NN: load mem at NN into X msb, and NN+1 in lsb
+	// 0xD2NN: load mem at NN into D msb, and NN+1 in lsb
 	// 0xA4NN: store A into mem at NN
 	// 0xB4NN: store B into mem at NN
 	// 0xC4NN: store C into mem at NN
@@ -122,7 +126,7 @@ void execute_opcode()
 #define A (cpu.A)
 #define B (cpu.B)
 #define C (cpu.C)
-#define X (cpu.X)
+#define D (cpu.D)
 
 
 	const auto unknown_opcode = []() 
@@ -191,7 +195,7 @@ void execute_opcode()
 		case 0xA200: A = cpu.mem[OPLSB]; break; 
 		case 0xB200: B = cpu.mem[OPLSB]; break; 
 		case 0xC200: C = cpu.mem[OPLSB]; break; 
-		case 0xD200: X = cpu.mem[OPLSB] << 8 | cpu.mem[OPLSB+1]; break;
+		case 0xD200: D = cpu.mem[OPLSB] << 8 | cpu.mem[OPLSB+1]; break;
 		case 0xA400: cpu.mem[OPLSB] = A; break;
 		case 0xB400: cpu.mem[OPLSB] = B; break;
 		case 0xC400: cpu.mem[OPLSB] = C; break;
@@ -203,7 +207,7 @@ void execute_opcode()
 #undef A 
 #undef B
 #undef C
-#undef X
+#undef D
 
 #undef ZF
 #undef CF
@@ -252,7 +256,7 @@ void print_cpu()
 	     << "A = " << cpu.A 
              << " | B = " << cpu.B 
              << " | C = " << cpu.C 
-             << " | X = " << cpu.X << '\n';
+             << " | D = " << cpu.D << '\n';
 
 
 	cout << "CPU MEMORY:\n";
